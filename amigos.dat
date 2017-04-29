@@ -1,0 +1,77 @@
+#include "conio.h"
+#include <iostream>
+#include <stdio.h>
+#include "string"
+using namespace std;
+
+struct regamigos{
+    char nombre[30];
+    char sexo;
+    int edad;
+    char estado;
+};
+void crearArchivo(char nomArch[]){
+    FILE *ptr;
+    ptr = fopen(nomArch,"wb");
+    fclose(ptr);
+}
+void llenarDatos (){
+    FILE *ptr;
+    regamigos reg;
+    ptr = fopen("amigos.dat","ab");
+    cout<<"Ingrese el nombre: ";
+    do{
+        gets (reg.nombre);
+    }while(strlen(reg.nombre)== 0);
+    do{
+        cout<<"Ingrese la edad: ";
+        cin>> reg.edad;
+    }while(reg.edad < 1 || reg.edad > 100);
+    do{
+        cout<<"Ingrese el sexo: ";
+        cin>>reg.sexo;
+        if(reg.sexo!='M' && reg.sexo!='F'){
+            cout<<"Dato ingresado no valido, utilize 'M' para masculino y 'F' para femenino"<<endl;
+        }
+    }while(reg.sexo!='M' && reg.sexo!='F');
+    reg.estado = 'A';
+    fwrite(&reg,sizeof(reg),1,ptr);
+    fclose(ptr);
+}
+void listaAmigos(){
+    FILE *ptr;
+    regamigos reg;
+    ptr=fopen("amigos.dat","rb");
+    if(ptr == NULL){
+        cout<<"Error #4591 con el archivo"<<endl;
+    }else{
+        fread(&reg,sizeof(reg),1,ptr);
+        while(feof (ptr)==false){
+            if(reg.estado == 'A'){
+                cout<<endl<<reg.nombre<<"\t"<<reg.edad<<"\t"<<reg.sexo;
+            }
+            fread(&reg,sizeof(reg),1,ptr);
+        }
+        fclose(ptr);
+    }
+}
+void main(){
+    int op;
+    do{
+        cout << "\n\n\t\t****M E N U****";
+        cout << "\n\t1.- Crear Archivo";
+        cout << "\n\t2.- Agregar nuevo amigo";
+        cout << "\n\t3.- Mostrar lista de amigos";
+        cout << "\n\t0.- Salir"<<endl;
+        cin >> op;
+        switch ( op ){
+        case 1: crearArchivo("amigos.dat");
+            break;
+        case 2: llenarDatos();
+            break;
+        case 3: listaAmigos();
+            break;
+        }
+    }while(op!=0);
+    getch();
+}
